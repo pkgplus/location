@@ -1,7 +1,6 @@
 package location
 
 import (
-	"fmt"
 	"math"
 )
 
