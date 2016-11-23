@@ -29,6 +29,15 @@ func GetAreaCode(province, city string) string {
 	}
 }
 
+func GetCityAreaCode(city string) string {
+	acode, found := MAP_AREACODE[city]
+	if found {
+		return acode
+	} else {
+		return "0"
+	}
+}
+
 func GetProvinceAreaCode(province string) string {
 	acode, found := MAP_AREACODE[province]
 	if found {
@@ -41,8 +50,8 @@ func GetProvinceAreaCode(province string) string {
 const (
 	JSON_CHINA_AREACODE = `{
     "浙江":"330000",
-    "北京":"110100",
-    "天津":"120100",
+    "北京":"110000",
+    "天津":"120000",
     "河北":"130000",
     "山西":"140000",
     "内蒙古":"150000",
