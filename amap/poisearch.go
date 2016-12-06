@@ -1,7 +1,6 @@
 package amap
 
 import (
-	"github.com/xuebing1110/location"
 	"net/url"
 	"reflect"
 	"strings"
@@ -132,10 +131,14 @@ func (p *PoiSearchRequest) do(respobj *PoiSearchResponse) error {
 		return nil
 	}
 
-	//增加city adcode
-	if respobj.AdCode != "" {
-		respobj.CCode = respobj.AdCode[0:4] + "00"
+	for _, poi := range respobj.Pois {
+		//增加city adcode
+		if poi.AdCode != "" {
+			poi.CCode = poi.AdCode[0:4] + "00"
+		}
 	}
+
+	return nil
 }
 
 func (p *PoiSearchRequest) SetCity(city string) *PoiSearchRequest {
