@@ -1,6 +1,7 @@
 package amap
 
 import (
+	"github.com/xuebing1110/location"
 	"net/url"
 	"reflect"
 	"strings"
@@ -31,6 +32,7 @@ type Poi struct {
 	Tel          string      `json:"tel"`
 	PCode        string      `json:"pcode"`
 	PName        string      `json:"pname"`
+	CCode        string      `json:"ccode"`
 	CityCode     string      `json:"citycode"`
 	CityName     string      `json:"cityname"`
 	AdCode       string      `json:"adcode"`
@@ -128,6 +130,11 @@ func (p *PoiSearchRequest) do(respobj *PoiSearchResponse) error {
 		return err
 	} else {
 		return nil
+	}
+
+	//增加city adcode
+	if respobj.AdCode != "" {
+		respobj.CCode = respobj.AdCode[0:4] + "00"
 	}
 }
 
