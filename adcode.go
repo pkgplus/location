@@ -21,10 +21,27 @@ type ChinaAreaCode struct {
 	adcodeToName   map[string]string
 	citycodeToName map[string]string
 	nameToCitycode map[string]string
+	adcodeTree     map[string][]*AreaInfo
 }
 
 func init() {
 	loading()
+}
+
+func NewAreaInfo(name, adcode string) *AreaInfo {
+	level := 0
+	parent := ""
+	if strings.HasSuffix(adcode, "0000") { //省
+		level = 1
+	} else if strings.HasSuffix(adcode, "00") { //市
+		parent = string(adcode[0:2]) + "0000"
+		level = 2
+	} else { //区县
+		parent = string(adcode[0:4]) + "00"
+		level = 3
+	}
+
+	return &AreaInfo{name, adcode, parent, level}
 }
 
 func GetCityAreaInfoArray() []*AreaInfo {
@@ -34,19 +51,7 @@ func GetCityAreaInfoArray() []*AreaInfo {
 			continue
 		}
 
-		level := 0
-		parent := ""
-		if strings.HasSuffix(adcode, "0000") { //省
-			level = 1
-		} else if strings.HasSuffix(adcode, "00") { //市
-			parent = string(adcode[0:2]) + "0000"
-			level = 2
-		} else { //区县
-			parent = string(adcode[0:4]) + "00"
-			level = 3
-		}
-
-		results = append(results, &AreaInfo{name, adcode, parent, level})
+		results = append(results, NewAreaInfo(name, adcode))
 	}
 
 	return results
@@ -55,22 +60,21 @@ func GetCityAreaInfoArray() []*AreaInfo {
 func GetAllAreaInfoArray() []*AreaInfo {
 	results := make([]*AreaInfo, 0)
 	for adcode, name := range DefaultChinaAreaCode.adcodeToName {
-		level := 0
-		parent := ""
-		if strings.HasSuffix(adcode, "0000") { //省
-			level = 1
-		} else if strings.HasSuffix(adcode, "00") { //市
-			parent = string(adcode[0:2]) + "0000"
-			level = 2
-		} else { //区县
-			parent = string(adcode[0:4]) + "00"
-			level = 3
-		}
-
-		results = append(results, &AreaInfo{name, adcode, parent, level})
+		results = append(results, NewAreaInfo(name, adcode))
 	}
 
 	return results
+}
+
+func GetAreaInfoArray(adcode string) []*AreaInfo {
+	areas, found := DefaultChinaAreaCode.adcodeTree[adcode]
+	if found {
+		return areas
+	} else if adcode = GetAdcode(adcode); adcode != "" {
+		return DefaultChinaAreaCode.adcodeTree[adcode]
+	} else {
+		return nil
+	}
 }
 
 func GetAdcode(name string) string {
@@ -117,6 +121,7 @@ func loading() {
 		nameToAdcode:   make(map[string]string),
 		citycodeToName: make(map[string]string),
 		nameToCitycode: make(map[string]string),
+		adcodeTree:     make(map[string][]*AreaInfo),
 	}
 
 	var array []string
@@ -139,9 +144,24 @@ func loading() {
 		DefaultChinaAreaCode.adcodeToName[array[1]] = array[0]
 		DefaultChinaAreaCode.nameToAdcode[array[0]] = array[1]
 
+		//city
 		if len(array) >= 3 && strings.HasSuffix(array[1], "00") {
 			DefaultChinaAreaCode.citycodeToName[array[2]] = array[0]
 			DefaultChinaAreaCode.nameToCitycode[array[0]] = array[2]
+		}
+
+		//adcode tree
+		areainfo := NewAreaInfo(array[0], array[1])
+		if areainfo.Parent != "" {
+			_, found := DefaultChinaAreaCode.adcodeTree[areainfo.Parent]
+			if !found {
+				DefaultChinaAreaCode.adcodeTree[areainfo.Parent] = make([]*AreaInfo, 0)
+			}
+
+			DefaultChinaAreaCode.adcodeTree[areainfo.Parent] = append(
+				DefaultChinaAreaCode.adcodeTree[areainfo.Parent],
+				areainfo,
+			)
 		}
 	}
 }
