@@ -61,21 +61,23 @@ type IndoorData struct {
 
 type PoiSearchRequest struct {
 	*ApiRequest
-	url      string
-	KeyWords string `json:"keywords"`
-	Types    string `json:"types"`
-	City     string `json:"city"`
-	Offset   string `json:"offset"`
-	Page     string `json:"page"`
-	Building string `json:"building"`
-	Floor    string `json:"floor"`
-	Output   string `json:"output"`
+	url        string
+	KeyWords   string `json:"keywords"`
+	Types      string `json:"types"`
+	City       string `json:"city"`
+	Offset     string `json:"offset"`
+	Page       string `json:"page"`
+	Building   string `json:"building"`
+	Floor      string `json:"floor"`
+	Output     string `json:"output"`
+	Extensions string `json:"extensions"`
 }
 
 func NewPoiSearchRequest(c *Client, keyword string) *PoiSearchRequest {
 	return &PoiSearchRequest{
 		ApiRequest: &ApiRequest{client: c},
 		KeyWords:   keyword,
+		Extensions: "all",
 	}
 }
 
