@@ -7,7 +7,11 @@ import (
 	"strings"
 )
 
-var DefaultChinaAreaCode *ChinaAreaCode
+var (
+	DefaultChinaAreaCode *ChinaAreaCode
+	cityAreaInfos        []*AreaInfo
+	allAreaInfos         []*AreaInfo
+)
 
 type AreaInfo struct {
 	Name   string `json:"name"`
@@ -55,25 +59,11 @@ func NewAreaInfo(name, adcode string) *AreaInfo {
 }
 
 func GetCityAreaInfoArray() []*AreaInfo {
-	results := make([]*AreaInfo, 0)
-	for adcode, name := range DefaultChinaAreaCode.adcodeToName {
-		if !strings.HasSuffix(adcode, "00") {
-			continue
-		}
-
-		results = append(results, NewAreaInfo(name, adcode))
-	}
-
-	return results
+	return cityAreaInfos
 }
 
 func GetAllAreaInfoArray() []*AreaInfo {
-	results := make([]*AreaInfo, 0)
-	for adcode, name := range DefaultChinaAreaCode.adcodeToName {
-		results = append(results, NewAreaInfo(name, adcode))
-	}
-
-	return results
+	return allAreaInfos
 }
 
 func GetAreaInfoArray(adcode string) []*AreaInfo {
@@ -134,6 +124,9 @@ func loading() {
 		adcodeTree:     make(map[string][]*AreaInfo),
 	}
 
+	cityAreaInfos = make([]*AreaInfo, 0)
+	allAreaInfos = make([]*AreaInfo, 0)
+
 	var array []string
 	var line string
 	var err error
@@ -161,6 +154,11 @@ func loading() {
 		}
 
 		areainfo := NewAreaInfo(name, adcode)
+		allAreaInfos = append(allAreaInfos, areainfo)
+		if areainfo.Level < 3 {
+			cityAreaInfos = append(cityAreaInfos, areainfo)
+		}
+
 		DefaultChinaAreaCode.adcodeToName[areainfo.Adcode] = areainfo.Name
 		DefaultChinaAreaCode.nameToAdcode[areainfo.Name] = areainfo.Adcode
 
