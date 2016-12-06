@@ -32,7 +32,7 @@ type Poi struct {
 	PCode        string      `json:"pcode"`
 	PName        string      `json:"pname"`
 	CityCode     string      `json:"citycode"`
-	CityName     string      `json:"citycode"`
+	CityName     string      `json:"cityname"`
 	AdCode       string      `json:"adcode"`
 	AdName       string      `json:"adname"`
 	EntrLocation string      `json:"entr_location"`
