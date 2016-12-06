@@ -10,6 +10,7 @@ func TestCode(t *testing.T) {
 		[3]string{"山东省", "370000", ""},
 		[3]string{"临沂市", "371300", "0539"},
 		[3]string{"沂水县", "371323", ""},
+		[3]string{"北京市", "110000", "010"},
 	}
 
 	for _, testdate := range testdatas {

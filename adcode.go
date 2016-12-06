@@ -41,6 +41,16 @@ func NewAreaInfo(name, adcode string) *AreaInfo {
 		level = 3
 	}
 
+	//直辖市
+	if isZhixia(adcode) {
+		if level == 3 {
+			parent = string(adcode[0:2]) + "0000"
+		} else if level == 2 {
+			adcode = parent
+			name = strings.TrimSuffix(name, "市辖区")
+		}
+	}
+
 	return &AreaInfo{name, adcode, parent, level}
 }
 
@@ -141,17 +151,26 @@ func loading() {
 
 		array[len(array)-1] = strings.Trim(array[len(array)-1], "\n")
 
-		DefaultChinaAreaCode.adcodeToName[array[1]] = array[0]
-		DefaultChinaAreaCode.nameToAdcode[array[0]] = array[1]
+		name := array[0]
+		adcode := array[1]
+		citycode := array[2]
+
+		//非直辖市的市辖区
+		if (strings.HasSuffix(name, "市辖区") && !isZhixia(adcode)) || strings.HasSuffix(name, "郊县") {
+			continue
+		}
+
+		areainfo := NewAreaInfo(name, adcode)
+		DefaultChinaAreaCode.adcodeToName[areainfo.Adcode] = areainfo.Name
+		DefaultChinaAreaCode.nameToAdcode[areainfo.Name] = areainfo.Adcode
 
 		//city
-		if len(array) >= 3 && strings.HasSuffix(array[1], "00") {
-			DefaultChinaAreaCode.citycodeToName[array[2]] = array[0]
-			DefaultChinaAreaCode.nameToCitycode[array[0]] = array[2]
+		if len(array) >= 3 && strings.HasSuffix(areainfo.Adcode, "00") {
+			DefaultChinaAreaCode.citycodeToName[citycode] = areainfo.Name
+			DefaultChinaAreaCode.nameToCitycode[areainfo.Name] = citycode
 		}
 
 		//adcode tree
-		areainfo := NewAreaInfo(array[0], array[1])
 		if areainfo.Parent != "" {
 			_, found := DefaultChinaAreaCode.adcodeTree[areainfo.Parent]
 			if !found {
@@ -163,6 +182,17 @@ func loading() {
 				areainfo,
 			)
 		}
+	}
+}
+
+func isZhixia(adcode string) bool {
+	if strings.HasPrefix(adcode, "11") ||
+		strings.HasPrefix(adcode, "31") ||
+		strings.HasPrefix(adcode, "12") ||
+		strings.HasPrefix(adcode, "50") {
+		return true
+	} else {
+		return false
 	}
 }
 
