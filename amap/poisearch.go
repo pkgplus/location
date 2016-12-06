@@ -127,12 +127,10 @@ func (p *PoiSearchRequest) do(respobj *PoiSearchResponse) error {
 	err := p.HttpGet(murl, respobj)
 	if err != nil {
 		return err
-	} else {
-		return nil
 	}
 
+	//增加city adcode
 	for _, poi := range respobj.Pois {
-		//增加city adcode
 		if poi.AdCode != "" {
 			poi.CCode = poi.AdCode[0:4] + "00"
 		}
