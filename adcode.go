@@ -13,6 +13,7 @@ type AreaInfo struct {
 	Name   string `json:"name"`
 	Adcode string `json:"adcode"`
 	Parent string `json:"parent"`
+	Level  int    `json:"level"`
 }
 
 type ChinaAreaCode struct {
@@ -33,14 +34,19 @@ func GetCityAreaInfoArray() []*AreaInfo {
 			continue
 		}
 
+		level := 0
 		parent := ""
-		if !strings.HasSuffix(adcode, "0000") {
+		if strings.HasSuffix(adcode, "0000") { //省
+			level = 1
+		} else if strings.HasSuffix(adcode, "00") { //市
 			parent = string(adcode[0:2]) + "0000"
-		} else if !strings.HasSuffix(adcode, "00") {
+			level = 2
+		} else { //区县
 			parent = string(adcode[0:4]) + "00"
+			level = 3
 		}
 
-		results = append(results, &AreaInfo{name, adcode, parent})
+		results = append(results, &AreaInfo{name, adcode, parent, level})
 	}
 
 	return results
@@ -49,14 +55,19 @@ func GetCityAreaInfoArray() []*AreaInfo {
 func GetAllAreaInfoArray() []*AreaInfo {
 	results := make([]*AreaInfo, 0)
 	for adcode, name := range DefaultChinaAreaCode.adcodeToName {
+		level := 0
 		parent := ""
-		if !strings.HasSuffix(adcode, "0000") {
+		if strings.HasSuffix(adcode, "0000") { //省
+			level = 1
+		} else if strings.HasSuffix(adcode, "00") { //市
 			parent = string(adcode[0:2]) + "0000"
-		} else if !strings.HasSuffix(adcode, "00") {
+			level = 2
+		} else { //区县
 			parent = string(adcode[0:4]) + "00"
+			level = 3
 		}
 
-		results = append(results, &AreaInfo{name, adcode, parent})
+		results = append(results, &AreaInfo{name, adcode, parent, level})
 	}
 
 	return results
