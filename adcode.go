@@ -46,7 +46,7 @@ func NewAreaInfo(name, adcode string) *AreaInfo {
 	}
 
 	//直辖市
-	if isZhixia(adcode) {
+	if IsZhixia(adcode) {
 		if level == 3 {
 			parent = string(adcode[0:2]) + "0000"
 		} else if level == 2 {
@@ -149,7 +149,7 @@ func loading() {
 		citycode := array[2]
 
 		//非直辖市的市辖区
-		if (strings.HasSuffix(name, "市辖区") && !isZhixia(adcode)) || strings.HasSuffix(name, "郊县") {
+		if (strings.HasSuffix(name, "市辖区") && !IsZhixia(adcode)) || strings.HasSuffix(name, "郊县") {
 			continue
 		}
 
@@ -183,7 +183,7 @@ func loading() {
 	}
 }
 
-func isZhixia(adcode string) bool {
+func IsZhixia(adcode string) bool {
 	if strings.HasPrefix(adcode, "11") ||
 		strings.HasPrefix(adcode, "31") ||
 		strings.HasPrefix(adcode, "12") ||

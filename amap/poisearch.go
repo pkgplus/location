@@ -1,6 +1,7 @@
 package amap
 
 import (
+	"github.com/xuebing1110/location"
 	"net/url"
 	"reflect"
 	"strings"
@@ -132,7 +133,12 @@ func (p *PoiSearchRequest) do(respobj *PoiSearchResponse) error {
 	//增加city adcode
 	for _, poi := range respobj.Pois {
 		if poi.AdCode != "" {
-			poi.CCode = poi.AdCode[0:4] + "00"
+			if location.IsZhixia(poi.AdCode) {
+				poi.CCode = poi.AdCode[0:2] + "0000"
+			} else {
+				poi.CCode = poi.AdCode[0:4] + "00"
+			}
+
 		}
 	}
 
