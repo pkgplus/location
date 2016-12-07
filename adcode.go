@@ -32,7 +32,7 @@ func init() {
 	loading()
 }
 
-func NewAreaInfo(name, adcode string) *AreaInfo {
+func newAreaInfo(name, adcode string) *AreaInfo {
 	level := 0
 	parent := ""
 	if strings.HasSuffix(adcode, "0000") { //省
@@ -56,6 +56,10 @@ func NewAreaInfo(name, adcode string) *AreaInfo {
 	}
 
 	return &AreaInfo{name, adcode, parent, level}
+}
+
+func NewAreaInfo(adcode string) *AreaInfo {
+	return newAreaInfo(GetNameByAdcode(adcode), adcode)
 }
 
 func GetCityAreaInfoArray() []*AreaInfo {
@@ -153,7 +157,7 @@ func loading() {
 			continue
 		}
 
-		areainfo := NewAreaInfo(name, adcode)
+		areainfo := newAreaInfo(name, adcode)
 		allAreaInfos = append(allAreaInfos, areainfo)
 		if areainfo.Level < 3 {
 			cityAreaInfos = append(cityAreaInfos, areainfo)
