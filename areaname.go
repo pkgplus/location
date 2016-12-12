@@ -1,6 +1,126 @@
 package location
 
+func ParseProvince(name string) (string, bool) {
+	province, found := MAP_AREANAME_PARSE[name]
+	if found {
+		return province, true
+	} else {
+		return name, false
+	}
+}
+
+func MustParseProvince(name string) string {
+	province, _ := ParseProvince(name)
+	return province
+}
+
+func MustParseCity(name string) string {
+	adcode := GetAdcode(name)
+	if adcode != "" {
+		return name
+	}
+
+	adcode = GetAdcode(name + "市")
+	if adcode != "" {
+		return name + "市"
+	}
+
+	return name
+}
+
+func GetCode(adcode string) string {
+	code, found := MAP_ADCODE_CODE[adcode]
+	if !found {
+		return ""
+	} else {
+		return code
+	}
+}
+
+func GetSimpleName(adcode string) string {
+	name, found := MAP_ADCODE_NAME_SIMPLE[adcode]
+	if !found {
+		return ""
+	} else {
+		return name
+	}
+}
+
 var (
+	MAP_ADCODE_CODE = map[string]string{
+		"340000": "AH",
+		"110000": "BJ",
+		"500000": "CQ",
+		"350000": "FJ",
+		"440000": "GD",
+		"620000": "GS",
+		"450000": "GX",
+		"520000": "GZ",
+		"410000": "HA",
+		"420000": "HB",
+		"130000": "HE",
+		"460000": "HI",
+		"810000": "HK",
+		"230000": "HL",
+		"430000": "HN",
+		"220000": "JL",
+		"320000": "JS",
+		"360000": "JX",
+		"210000": "LN",
+		"820000": "MO",
+		"150000": "NM",
+		"640000": "NX",
+		"630000": "QH",
+		"510000": "SC",
+		"370000": "SD",
+		"310000": "SH",
+		"610000": "SN",
+		"140000": "SX",
+		"120000": "TJ",
+		"710000": "TW",
+		"650000": "XJ",
+		"540000": "XZ",
+		"530000": "YN",
+		"330000": "ZJ",
+	}
+
+	MAP_ADCODE_NAME_SIMPLE = map[string]string{
+		"340000": "安徽",
+		"110000": "北京",
+		"500000": "重庆",
+		"350000": "福建",
+		"440000": "广东",
+		"620000": "甘肃",
+		"450000": "广西",
+		"520000": "贵州",
+		"410000": "河南",
+		"420000": "湖北",
+		"130000": "河北",
+		"460000": "海南",
+		"810000": "香港",
+		"230000": "黑龙江",
+		"430000": "湖南",
+		"220000": "吉林",
+		"320000": "江苏",
+		"360000": "江西",
+		"210000": "辽宁",
+		"820000": "澳门",
+		"150000": "内蒙",
+		"640000": "宁夏",
+		"630000": "青海",
+		"510000": "四川",
+		"370000": "山东",
+		"310000": "上海",
+		"610000": "陕西",
+		"140000": "山西",
+		"120000": "天津",
+		"710000": "台湾",
+		"650000": "新疆",
+		"540000": "西藏",
+		"530000": "云南",
+		"330000": "浙江",
+	}
+
 	MAP_AREANAME_PARSE = map[string]string{
 		"广东":           "广东省",
 		"江苏":           "江苏省",
@@ -91,31 +211,3 @@ var (
 		"台湾省":      "台湾省",
 	}
 )
-
-func ParseProvince(name string) (string, bool) {
-	province, found := MAP_AREANAME_PARSE[name]
-	if found {
-		return province, true
-	} else {
-		return name, false
-	}
-}
-
-func MustParseProvince(name string) string {
-	province, _ := ParseProvince(name)
-	return province
-}
-
-func MustParseCity(name string) string {
-	adcode := GetAdcode(name)
-	if adcode != "" {
-		return name
-	}
-
-	adcode = GetAdcode(name + "市")
-	if adcode != "" {
-		return name + "市"
-	}
-
-	return name
-}
