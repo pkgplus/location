@@ -1,14 +1,14 @@
 package amap
 
 import (
+	"fmt"
 	"github.com/xuebing1110/location"
-	"net/url"
-	"reflect"
 	"strings"
 )
 
 const (
 	URL_POISEARCH_KEYWORD = `http://restapi.amap.com/v3/place/text`
+	URL_POISEARCH_AROUND  = `http://restapi.amap.com/v3/place/around`
 )
 
 type PoiSearchResponse struct {
@@ -73,6 +73,7 @@ type PoiSearchRequest struct {
 	Floor      string `json:"floor"`
 	Output     string `json:"output"`
 	Extensions string `json:"extensions"`
+	Location   string `json:"location"`
 }
 
 func NewPoiSearchRequest(c *Client, keyword string) *PoiSearchRequest {
@@ -80,26 +81,12 @@ func NewPoiSearchRequest(c *Client, keyword string) *PoiSearchRequest {
 		ApiRequest: &ApiRequest{client: c},
 		KeyWords:   keyword,
 		Extensions: "all",
+		url:        URL_POISEARCH_KEYWORD,
 	}
 }
 
 func (p *PoiSearchRequest) GetUrlParas() string {
-	vs := url.Values{}
-	vs.Set("key", p.client.key)
-
-	t := reflect.TypeOf(p)
-	v := reflect.ValueOf(p)
-	for i := 0; i < t.Elem().NumField(); i++ {
-		if t.Elem().Field(i).Type.Kind() == reflect.String {
-			tag := t.Elem().Field(i).Tag.Get("json")
-			value := v.Elem().Field(i).String()
-			if value != "" {
-				vs.Add(tag, value)
-			}
-		}
-	}
-
-	return vs.Encode()
+	return GetUrlParas(p.client.key, p)
 }
 
 func (p *PoiSearchRequest) Do() (*PoiSearchResponse, error) {
@@ -123,7 +110,7 @@ func (p *PoiSearchRequest) Do() (*PoiSearchResponse, error) {
 }
 
 func (p *PoiSearchRequest) do(respobj *PoiSearchResponse) error {
-	murl := URL_POISEARCH_KEYWORD + "?" + p.GetUrlParas()
+	murl := p.url + "?" + p.GetUrlParas()
 
 	err := p.HttpGet(murl, respobj)
 	if err != nil {
@@ -171,8 +158,8 @@ func (p *PoiSearchRequest) SetTypes(poitypes []string) *PoiSearchRequest {
 	return p
 }
 
-func (p *PoiSearchRequest) SetPageSize(size string) *PoiSearchRequest {
-	p.Offset = size
+func (p *PoiSearchRequest) SetPageSize(size int) *PoiSearchRequest {
+	p.Offset = fmt.Sprintf("%d", size)
 	return p
 }
 
@@ -198,5 +185,11 @@ func (p *PoiSearchRequest) SetOutputJson() *PoiSearchRequest {
 
 func (p *PoiSearchRequest) SetOutputXml() *PoiSearchRequest {
 	p.Output = "XML"
+	return p
+}
+
+func (p *PoiSearchRequest) SetAroundSearch(loc string) *PoiSearchRequest {
+	p.url = URL_POISEARCH_AROUND
+	p.Location = loc
 	return p
 }

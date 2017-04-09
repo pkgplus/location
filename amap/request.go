@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"net/url"
+	"reflect"
 )
 
 type ApiRequest struct {
@@ -41,4 +43,23 @@ func (req *ApiRequest) HttpGet(url string, v Response) error {
 	} else {
 		return nil
 	}
+}
+
+func GetUrlParas(key string, p interface{}) string {
+	vs := url.Values{}
+	vs.Set("key", key)
+
+	t := reflect.TypeOf(p)
+	v := reflect.ValueOf(p)
+	for i := 0; i < t.Elem().NumField(); i++ {
+		if t.Elem().Field(i).Type.Kind() == reflect.String {
+			tag := t.Elem().Field(i).Tag.Get("json")
+			value := v.Elem().Field(i).String()
+			if value != "" {
+				vs.Add(tag, value)
+			}
+		}
+	}
+
+	return vs.Encode()
 }
