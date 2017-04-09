@@ -54,6 +54,9 @@ func GetUrlParas(key string, p interface{}) string {
 	for i := 0; i < t.Elem().NumField(); i++ {
 		if t.Elem().Field(i).Type.Kind() == reflect.String {
 			tag := t.Elem().Field(i).Tag.Get("json")
+			if tag == "-" {
+				continue
+			}
 			value := v.Elem().Field(i).String()
 			if value != "" {
 				vs.Add(tag, value)

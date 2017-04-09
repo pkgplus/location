@@ -38,6 +38,7 @@ type InputtipsRequest struct {
 	CityLimit string `json:"citylimit"`
 	DataType  string `json:"datatype"`
 	Output    string `json:"output"`
+	CityName  string `json:"-"`
 }
 
 func NewInputtipsRequest(c *Client, keyword string) *InputtipsRequest {
@@ -93,6 +94,7 @@ func (p *InputtipsRequest) do(respobj *InputtipsResponse) error {
 
 func (p *InputtipsRequest) SetCity(city string) *InputtipsRequest {
 	p.City = city
+	p.CityName = city
 	return p
 }
 
