@@ -62,6 +62,7 @@ func (p *InputtipsRequest) Do() (*InputtipsResponse, error) {
 		}
 		if len(resp.Pois) > 0 {
 			p.City = resp.Pois[0].CityCode
+			p.CityName = resp.Pois[0].CityName
 		}
 	}
 
