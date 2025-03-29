@@ -2,7 +2,7 @@ package amap
 
 import (
 	"fmt"
-	"github.com/xuebing1110/location"
+	"github.com/pkgplus/location"
 	"strings"
 )
 
